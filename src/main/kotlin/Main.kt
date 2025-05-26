@@ -36,7 +36,7 @@ suspend fun main() {
     kord = Kord(Environment.DISCORD_TOKEN)
     sobChannel = kord.getGuild(guildId).getChannel(Snowflake(Environment.SOB_BOARD_CHANNEL)).asChannelOf<TextChannel>()
 
-    Commands().register()
+    Commands.register()
     Projects().register()
     RolePicker().register()
     Rules().register()
