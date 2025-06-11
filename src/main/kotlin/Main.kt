@@ -3,6 +3,9 @@ import cz.lukynka.prettylog.LoggerSettings
 import cz.lukynka.prettylog.LoggerStyle
 import cz.lukynka.prettylog.log
 import dev.kord.common.Color
+import dev.kord.common.entity.AuditLogChangeKey
+import dev.kord.common.entity.Permission
+import dev.kord.common.entity.Permissions
 import dev.kord.common.entity.Snowflake
 import dev.kord.core.Kord
 import dev.kord.core.behavior.channel.asChannelOf
@@ -28,6 +31,8 @@ val version = Resources.getVersion()
 val guildId = Snowflake(Environment.GUILD_ID)
 val memberRole = Snowflake(Environment.MEMBER_ROLE)
 val sobEmojis = listOf("🏳️‍🌈", "😭", "🏳️‍⚧️")
+
+const val EVERYONE_ID = 1242845647892123650
 
 @OptIn(PrivilegedIntent::class)
 suspend fun main() {
@@ -56,6 +61,14 @@ suspend fun main() {
     }
 
     kord.on<ReactionAddEvent> {
+        // null if there's no override for `everyone`
+        val everyonePerms = channel.asChannelOf<TextChannel>()
+            .getPermissionOverwritesForRole(Snowflake(EVERYONE_ID))
+        
+        if (everyonePerms?.data?.denied?.contains(Permission.ViewChannel) == true) {
+            return@on
+        }
+
         val message = getMessage()
         if(!sobEmojis.contains(emoji.name) || message.author?.isBot == true) return@on
         if(sobbedMessages.containsValue(getMessageLink(message))) {
