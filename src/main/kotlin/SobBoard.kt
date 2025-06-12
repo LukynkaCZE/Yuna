@@ -10,9 +10,16 @@ object SobBoard {
     suspend fun addMessage(message: Message) {
         val footer = StringBuilder()
         val descriptionString = StringBuilder()
-        message.reactions.forEach { reaction ->
-            if (sobEmojis.contains(reaction.emoji.name)) footer.append("${reaction.count} ${reaction.emoji.name}")
-        }
+        message.reactions
+            .filter {
+                sobEmojis.contains(it.emoji.name)
+            }
+            .joinToString(" ") { reaction ->
+                "${reaction.count} ${reaction.emoji.name}"
+            }
+            .let {
+                descriptionString.append(it)
+            }
 
         if (message.embeds.isEmpty()) {
             descriptionString.append(message.content)
