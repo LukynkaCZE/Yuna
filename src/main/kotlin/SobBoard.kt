@@ -8,17 +8,13 @@ val sobbedMessages: MutableMap<Message, String> = mutableMapOf()
 object SobBoard {
 
     suspend fun addMessage(message: Message) {
-        val footer = StringBuilder()
         val descriptionString = StringBuilder()
-        message.reactions
+        val footer = message.reactions
             .filter {
                 sobEmojis.contains(it.emoji.name)
             }
             .joinToString(" ") { reaction ->
                 "${reaction.count} ${reaction.emoji.name}"
-            }
-            .let {
-                descriptionString.append(it)
             }
 
         if (message.embeds.isEmpty()) {
@@ -40,8 +36,7 @@ object SobBoard {
                     icon = message.author?.avatar?.cdnUrl?.toUrl()
                 }
                 footer {
-                    text = footer.toString()
-
+                    text = footer
                 }
             }
             for (attachment in message.attachments) {
@@ -74,11 +69,15 @@ object SobBoard {
 
     suspend fun updateMessageFromMessage(originalMessage: Message) {
         val boardMessage = sobbedMessages.entries.find { it.value == getMessageLink(originalMessage) }?.key
-        val footer = StringBuilder()
         val descriptionString = StringBuilder()
-        originalMessage.reactions.forEach { reaction ->
-            if (sobEmojis.contains(reaction.emoji.name)) footer.append("${reaction.count} ${reaction.emoji.name}")
-        }
+
+        val footer = originalMessage.reactions
+            .filter {
+                sobEmojis.contains(it.emoji.name)
+            }
+            .joinToString(" ") { reaction ->
+                "${reaction.count} ${reaction.emoji.name}"
+            }
 
         if (originalMessage.embeds.isEmpty()) {
             descriptionString.append(originalMessage.content)
@@ -98,7 +97,7 @@ object SobBoard {
                     icon = originalMessage.author?.avatar?.cdnUrl?.toUrl()
                 }
                 footer {
-                    text = footer.toString()
+                    text = footer
                 }
             }
             for (attachment in originalMessage.attachments) {
