@@ -27,10 +27,6 @@ tasks.test {
     useJUnitPlatform()
 }
 
-java {
-    this.targetCompatibility = org.gradle.api.JavaVersion.VERSION_17
-}
-
 tasks.withType<Jar> {
     manifest {
         attributes["Main-Class"] = "MainKt"
