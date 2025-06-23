@@ -1,3 +1,5 @@
+import cz.lukynka.prettylog.LogType
+import cz.lukynka.prettylog.log
 import dev.kord.core.behavior.channel.createMessage
 import dev.kord.core.behavior.edit
 import dev.kord.core.entity.Message
@@ -14,13 +16,23 @@ object SobBoard {
             if (sobEmojis.contains(reaction.emoji.name)) footer.append("${reaction.count} ${reaction.emoji.name}")
         }
 
+        if (message.messageReference?.message != null) {
+            val referencedMessage = message.messageReference!!.message!!.asMessage()
+            descriptionString.appendLine("> Reply to ${referencedMessage.author?.username}")
+            descriptionString.appendLine("> [${referencedMessage.content}](${getMessageLink(referencedMessage)})")
+        }
+
         if (message.embeds.isEmpty()) {
             descriptionString.append(message.content)
         } else {
-            descriptionString.append(message.embeds[0].description)
+            var descriptor = message.content
+            for (embed in message.embeds) {
+                descriptor = descriptor.replace(embed.url!!, "${clickableButton("gif", embed.video!!.url!!)}", true)
+            }
+            descriptionString.appendLine(descriptor)
         }
         for (attachment in message.attachments) {
-            if (!attachment.isImage) descriptionString.appendLine("${clickableButton("video", attachment.url)}\n")
+            if (!attachment.isImage) descriptionString.appendLine(clickableButton("video", attachment.url))
         }
 
         val boardMessage = sobChannel.createMessage {
@@ -73,10 +85,20 @@ object SobBoard {
             if (sobEmojis.contains(reaction.emoji.name)) footer.append("${reaction.count} ${reaction.emoji.name}")
         }
 
+        if (originalMessage.messageReference?.message != null) {
+            val referencedMessage = originalMessage.messageReference!!.message!!.asMessage()
+            descriptionString.appendLine("> Reply to ${referencedMessage.author?.username}")
+            descriptionString.appendLine("> [${referencedMessage.content}](${getMessageLink(referencedMessage)})\n")
+        }
+
         if (originalMessage.embeds.isEmpty()) {
             descriptionString.append(originalMessage.content)
         } else {
-            descriptionString.append(originalMessage.embeds[0].description)
+            var descriptor = originalMessage.content
+            for (embed in originalMessage.embeds) {
+                descriptor = descriptor.replace(embed.url!!, "${clickableButton("gif", embed.video!!.url!!)}", true)
+            }
+            descriptionString.appendLine(descriptor)
         }
         for (attachment in originalMessage.attachments) {
             if (!attachment.isImage) descriptionString.appendLine(clickableButton("video", attachment.url))
