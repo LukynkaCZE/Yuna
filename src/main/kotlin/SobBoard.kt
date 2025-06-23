@@ -1,5 +1,3 @@
-import cz.lukynka.prettylog.LogType
-import cz.lukynka.prettylog.log
 import dev.kord.core.behavior.channel.createMessage
 import dev.kord.core.behavior.edit
 import dev.kord.core.entity.Message
@@ -27,7 +25,7 @@ object SobBoard {
         } else {
             var descriptor = message.content
             for (embed in message.embeds) {
-                descriptor = descriptor.replace(embed.url!!, "${clickableButton("gif", embed.video!!.url!!)}", true)
+                descriptor = descriptor.replace(embed.url!!, clickableButton("gif", embed.video!!.url!!), true)
             }
             descriptionString.appendLine(descriptor)
         }
@@ -96,7 +94,7 @@ object SobBoard {
         } else {
             var descriptor = originalMessage.content
             for (embed in originalMessage.embeds) {
-                descriptor = descriptor.replace(embed.url!!, "${clickableButton("gif", embed.video!!.url!!)}", true)
+                descriptor = descriptor.replace(embed.url!!, clickableButton("gif", embed.video!!.url!!), true)
             }
             descriptionString.appendLine(descriptor)
         }
